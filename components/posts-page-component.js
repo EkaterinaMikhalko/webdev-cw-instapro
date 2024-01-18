@@ -42,7 +42,7 @@ export function renderPostsPageComponent({ appEl }) {
               </div>`;
   });
   console.log("Актуальный список постов:", posts);
-
+  console.log("работает"); 
   /**
    * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
    * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
