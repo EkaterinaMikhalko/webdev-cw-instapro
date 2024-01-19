@@ -95,4 +95,30 @@ export function addPost({ description, imageUrl, token }) {
     headers: { Authorization: token },
     body: JSON.stringify({ description, imageUrl }),
   });
+};
+
+export function like({ postId, token }) {
+  return fetch(`${postsHost}/${postId}/like`, {
+    method: "POST",
+    headers: { Authorization: token },
+  }).then((response) => {
+    if (response.status === 401) {
+      alert ("Пожалуйста, авторизуйтесь")
+      throw new Error("Нет авторизации");
+    }
+    return response.json();
+  });
+}
+
+export function disLike({ postId, token }) {
+  return fetch(`${postsHost}/${postId}/dislike`, {
+    method: "POST",
+    headers: { Authorization: token },
+  }).then((response) => {
+    if (response.status === 401) {
+      alert ("Пожалуйста, авторизуйтесь")
+      throw new Error("Нет авторизации");
+    }
+    return response.json();
+  });
 }

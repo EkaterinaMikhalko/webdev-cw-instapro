@@ -1,15 +1,26 @@
-import { USER_POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE, POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage } from "../index.js";
+import { posts, goToPage, getToken } from "../index.js";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
+import { like, disLike } from "../api.js";
+
 
 export function renderPostsPageComponent({ appEl }) {
-  // TODO: реализовать рендер постов из api
+  let postLikes;
   const appHtml = posts.map((post) => {
     const postDateBefore = formatDistanceToNow(new Date(post.createdAt), {
       locale: ru,
     });
+    if (post.likes.length === 1){
+      postLikes = post.likes[0].name;
+    } else if (post.likes.length > 1) {
+      postLikes = `${post.likes[0].name} и еще ${post.likes.length - 1}`;
+    } else {
+      postLikes = 0;
+    }
+
+
     return ` 
               <div class="page-container">
                 <div class="header-container"></div>
@@ -24,10 +35,14 @@ export function renderPostsPageComponent({ appEl }) {
                     </div>
                     <div class="post-likes">
                       <button data-post-id="${post.id}" class="like-button">
-                        <img src="./assets/images/like-active.svg">
+                      <img  src="${
+                        post.isLiked
+                          ? './assets/images/like-active.svg'
+                          : './assets/images/like-not-active.svg'
+                      }">
                       </button>
                       <p class="post-likes-text">
-                        Нравится: <strong>2</strong>
+                        Нравится: <strong>${postLikes}</strong>
                       </p>
                     </div>
                     <p class="post-text">
@@ -40,9 +55,12 @@ export function renderPostsPageComponent({ appEl }) {
                   </li>
                   </ul>
               </div>`;
-  });
+  })
+  .join ('');
   console.log("Актуальный список постов:", posts);
   console.log("работает");
+
+
   
   appEl.innerHTML = appHtml;
 
@@ -57,4 +75,33 @@ export function renderPostsPageComponent({ appEl }) {
       });
     });
   }
+
+
+for (let likeButton of document.querySelectorAll(".like-button")) {
+  likeButton.addEventListener("click", () => {
+    const isLiked = likeButton.dataset.isLiked === "true" ? true : false;
+    const postId = likeButton.dataset.postId;
+    console.log(isLiked)
+    if (isLiked) {
+  
+      disLike({ postId: postId, token: getToken() })
+        .then(() => {
+          goToPage(POSTS_PAGE);
+        })
+        .catch(() => {
+          goToPage(POSTS_PAGE);
+        });
+    } else {
+
+      like({ postId: postId, token: getToken() })
+        .then(() => {
+          goToPage(POSTS_PAGE);
+        })
+        .catch(() => {
+          goToPage(POSTS_PAGE);
+        });
+    }
+  });
 }
+}
+
