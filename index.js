@@ -9,6 +9,7 @@ import {
   USER_POSTS_PAGE,
 } from "./routes.js";
 import { renderPostsPageComponent } from "./components/posts-page-component.js";
+import { renderUserPostsPageComponent } from "./components/user-posts-page-component.js";
 import { renderLoadingPageComponent } from "./components/loading-page-component.js";
 import {
   getUserFromLocalStorage,
@@ -70,7 +71,7 @@ export const goToPage = (newPage, data) => {
       page = LOADING_PAGE;
       renderApp();
       // TODO: реализовать получение постов юзера из API
-      return getUserPosts({ id: data.id, token: getToken() }).then(
+      return getUserPosts({ id: data.userId, token: getToken() }).then(
         (responseData) => {
           console.log("Открываю страницу пользователя: ", data.userId);
           page = USER_POSTS_PAGE;
@@ -134,8 +135,9 @@ const renderApp = () => {
 
   if (page === USER_POSTS_PAGE) {
     // TODO: реализовать страницу фотографию пользвателя
-    appEl.innerHTML = "Здесь будет страница фотографий пользователя";
-    return;
+    return renderUserPostsPageComponent({
+      appEl,
+    });
   }
 };
 
