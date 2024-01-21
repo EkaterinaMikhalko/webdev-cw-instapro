@@ -1,7 +1,9 @@
+import { POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage } from "../index.js";
+import { posts, goToPage, getToken } from "../index.js";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
+import { like, disLike } from "../api.js";
 
 export function renderUserPostsPageComponent({ appEl }) {
     let postLikes;
@@ -50,7 +52,8 @@ export function renderUserPostsPageComponent({ appEl }) {
                     </li>
                     </ul>
                 </div>`;
-    });
+    })
+    .join ('');
 
     appEl.innerHTML = appHtml;
 
@@ -63,24 +66,27 @@ export function renderUserPostsPageComponent({ appEl }) {
       const isLiked = likeButton.dataset.isLiked === "true" ? true : false;
       const postId = likeButton.dataset.postId;
       console.log(isLiked)
-      if (isLiked) {
-    
-        disLike({ postId: postId, token: getToken() })
-          .then(() => {
-            goToPage(POSTS_PAGE);
-          })
-          .catch(() => {
-            goToPage(POSTS_PAGE);
-          });
-      } else {
-  
+      if (isLiked === "false") {
+
         like({ postId: postId, token: getToken() })
-          .then(() => {
-            goToPage(POSTS_PAGE);
-          })
-          .catch(() => {
-            goToPage(POSTS_PAGE);
-          });
+        .then(() => {
+          goToPage(POSTS_PAGE);
+        })
+        .catch(() => {
+          goToPage(POSTS_PAGE);
+        });
+    
+
+      } else {
+
+        disLike({ postId: postId, token: getToken() })
+        .then(() => {
+          goToPage(POSTS_PAGE);
+        })
+        .catch(() => {
+          goToPage(POSTS_PAGE);
+        });
+
       }
     });
   }
